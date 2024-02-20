@@ -35,12 +35,13 @@ class Programm
         return array;
     }
 
-    static string[] CuttedArray(int maxcharnumber, string[] InputArray) // блок - схема
+    // блок - схема
+    static string[] CuttedArray(int maxcharnumber, string[] InputArray)
     {
-        string[] TargetArray = new string[] {};
+        string[] TargetArray = new string[] { };
         foreach (string word in InputArray)
         {
-            if(word.Length <= maxcharnumber)
+            if (word.Length <= maxcharnumber)
             {
                 TargetArray = TargetArray.Append(word).ToArray();
             }
@@ -77,6 +78,9 @@ class Programm
         }
 
         string[] TargetArray = CuttedArray(maxcharcount, InputArray);
+        // альтернативный метод
+        //Alter alter = new Alter(); 
+        // string[] TargetArray = alter.TargetArray(maxcharcount, InputArray);
         Console.WriteLine("Массив отобранных слов:");
         Console.WriteLine(string.Join("\t ", TargetArray));
     }
