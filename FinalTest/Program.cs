@@ -35,17 +35,17 @@ class Programm
         return array;
     }
 
-    static string[] CuttedArray(int charcount, string[] array) // блок - схема
+    static string[] CuttedArray(int maxcharnumber, string[] InputArray) // блок - схема
     {
-        string[] targets = new string[] {};
-        foreach (string word in array)
+        string[] TargetArray = new string[] {};
+        foreach (string word in InputArray)
         {
-            if(word.Length <= charcount)
+            if(word.Length <= maxcharnumber)
             {
-                targets = targets.Append(word).ToArray();
+                TargetArray = TargetArray.Append(word).ToArray();
             }
         }
-        return targets;
+        return TargetArray;
     }
 
 
