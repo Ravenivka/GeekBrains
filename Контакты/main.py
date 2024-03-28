@@ -29,14 +29,14 @@ def Read_db(Data : Connection, recindex):  #Opening DB
     item = records[recindex]
     ent_title.delete(0, END)
     ent_title.insert(0,item[0])    
-    phones =[word.strip() for word in item[1].split(';')]        
+    phones =[word.strip() for word in item[1].split(';') if word != '']        
     phones_var.set(phones)
-    mails =[word.strip() for word in item[2].split(';')]
+    mails =[word.strip() for word in item[2].split(';') if word != '']
     box_mails.config(height=len(mails))
     mails_var.set(mails)
     ent_bday.delete(0, END)
     ent_bday.insert(0,item[3])
-    addons = [word.strip() for word in item[4].split(';')]
+    addons = [word.strip() for word in item[4].split(';') if word != '']
     if len(addons) > len(phones):
         box_addons.config(height=len(addons))
         box_phone.config(height=len(addons))
@@ -44,6 +44,7 @@ def Read_db(Data : Connection, recindex):  #Opening DB
         box_addons.config(height=len(phones))
         box_phone.config(height=len(phones))
     addons_var.set(addons)
+    lbl_index.config(text=str(recindex))
 
 def Connect(dbpath): #Подключение базы данных
     conn = Connection(dbpath)
@@ -89,6 +90,7 @@ def New_rec():
     box_addons.config(height=1)
     box_phone.config(height=1)    
     addons_var.set(addons)
+    lbl_index.config(text='*')
 
 def Search_rec():
     rslt = []
@@ -108,42 +110,57 @@ def Search_rec():
         item = records[i]
         if item[0] == choice:
             index = i
-    Read_db(db, index)    
+    Read_db(db, index) 
+    lbl_index.config(text=str(index))   
 
 def New_addons():    
-    newvalue = enterbox('Добавьте информацию, для удобства используйте формат ТИП : Значение', 'Добавить', '' )
+    newvalue = enterbox('Добавьте информацию', 'Добавить', '' )
     if newvalue == '':
         return
-    box_addons.insert(END, newvalue)
-    if box_addons.size() > len(phones):
+    if box_addons.size() == 0:
+        addons_var.set(newvalue)
+    else:        
+        box_addons.insert(END, newvalue)
+    if box_addons.size() > box_phone.size():
         box_addons.config(height=box_addons.size())
         box_phone.config(height=box_addons.size())
     else:
-        box_addons.config(height=len(phones))
-        box_phone.config(height=len(phones))
+        box_addons.config(height=box_phone.size())
+        box_phone.config(height=box_phone.size())
     
 def New_phone():
     newvalue = enterbox('Добавьте номер телефона', 'Добавить', '' )
     if newvalue == '':
         return    
-    box_phone.insert(END, newvalue)
-    if box_phone.size() > len(addons):
+    if box_phone.size() == 0 :
+        phones_var.set(newvalue)
+    else:        
+        box_phone.insert(END, newvalue)
+    if box_phone.size() > box_addons.size():
         box_addons.config(height=box_phone.size())
         box_phone.config(height=box_phone.size())
     else:
-        box_addons.config(height=len(addons))
-        box_phone.config(height=len(addons))
+        box_addons.config(height=box_addons.size())
+        box_phone.config(height=box_addons.size())
 
 def New_email():
     newvalue = enterbox('Добавьте e-mail', 'Добавить', '' )
     if newvalue == '':
         return     
-    box_mails.insert(END, newvalue)
+    if box_mails.size() == 0:
+        mails_var.set(newvalue)
+    else:        
+        box_mails.insert(END, newvalue)
     box_mails.config(height=box_mails.size())
 
+def Del_rec():
+    curs = db.cursor()
+    card_name = ent_title.get()
+    curs.execute('DELETE FROM Контакты WHERE title=?', (card_name, ))
+    db.commit()  
+    Read_db(db, 0)            
 
-
-def Save_card(): 
+def Save_rec(): 
     global path 
     global db   
     if db == None: #автосоздание базы данных
@@ -154,6 +171,12 @@ def Save_card():
             filename = "Контакты(" + str(counter) + ").db"
         path = os.path.abspath(filename)
         db = Connect(path)
+        index = 0
+    else:
+        if lbl_index.cget('text') == '*':
+            index = 0
+        else:
+            index = int(lbl_index.cget('text'))
     rows = []
     card_name = ent_title.get()
     rows.append(card_name)
@@ -171,58 +194,110 @@ def Save_card():
         info = curs.execute('DELETE FROM Контакты WHERE title=?', (card_name, ))
     curs.execute('INSERT into Контакты VALUES(?, ?, ?, ?, ?)', rows)
     db.commit()  
-    Read_db(db, 0)
+    Read_db(db, index)
    
         
+def Movie_first():
+    Read_db(db, 0)
+    
+def Movie_prev():
+    i = int(lbl_index.cget('text'))
+    if i != 0:
+        i = i-1
+        Read_db(db, i)
 
+def Movie_next():
+    i = int(lbl_index.cget('text'))
+    if i != len(records) - 1 :
+        i+=1
+        Read_db(db, i)
+    
+def Movie_last():
+    Read_db(db, len(records) - 1) 
+
+def Edit(list : Listbox):
+    value = ';'.join(list.get(0,END))
+    result = enterbox('Внесите изменения', 'Внимание', value)
+    if result != None:
+        array=[word.strip() for word in result.split(';') if word != '']
+        list.delete(0, END)
+        list.config(listvariable = StringVar(value=array))
+
+
+def Edit_phone():
+    Edit(box_addons)
+
+def Edit_email():
+    Edit(box_mails)
+
+def Edit_addons():
+    Edit(box_addons)
     
 
-
-    
-
+#Окно
 window.title("Телефонный справочник")
 window.geometry('1024x600') 
-lbl_path = Label(text = '', font = ("Arial", 10))
+lbl_path = Label(text = '', font = ("Arial", 10)) #Путь к файлу
 lbl_path.grid(row=0, column=0, pady=10, padx=10, columnspan=3)
-lbl_title = Label(text = 'Имя', font = ("Script MT Bold", 14))
+lbl_title = Label(text = 'Имя', font = ("Script MT Bold", 14)) 
 lbl_title.grid(row=1, column=0, pady=10, padx=10) 
-ent_title = Entry()
+ent_title = Entry() #Поле title
 ent_title.grid(row=1, column=1, pady=10, padx=10)
 lbl_phon = Label(text = 'Телефоны:', font = ("Script MT Bold", 14))
 lbl_phon.grid(row=2, column=0, pady=10, padx=10)
 phones = []
 phones_var = StringVar(value=phones)
-box_phone = Listbox(listvariable=phones_var, height=1)
+box_phone = Listbox(listvariable=phones_var, height=1) #Список телефонов
 box_phone.grid(row=2, column=1, pady=10, padx=10)
 btn_phone = Button(text = 'Добавить', command=New_phone)
-btn_phone.grid(row = 2, column=2, sticky='E')
+btn_phone.grid(row = 2, column=2, sticky='NE')
+btn_e_phone = Button(text = 'Изменить', command=Edit_phone)
+btn_e_phone.grid(row = 2, column=2, sticky='SE')
 lbl_mail = Label(text = 'e-mail', font = ("Script MT Bold", 14))
 lbl_mail.grid(row=3, column=0, pady=10, padx=10) 
 lbl_day = Label(text = 'День рождения', font = ("Script MT Bold", 14))
 lbl_day.grid(row=4, column=0, pady=10, padx=10) 
 mails = []
 mails_var = StringVar(value=mails)
-box_mails = Listbox(listvariable=mails_var, height=1)
+box_mails = Listbox(listvariable=mails_var, height=1) #Список почтовых адресов
 box_mails.grid(row=3, column=1, pady=10, padx=10)
 btn_mail = Button(text = 'Добавить', command=New_email)
-btn_mail.grid(row = 3, column=2, sticky='E')
-ent_bday = Entry()
+btn_mail.grid(row = 3, column=2, sticky='NE')
+btn_e_mail = Button(text = 'Изменить', command=Edit_email)
+btn_e_mail.grid(row = 3, column=2, sticky='SE')
+ent_bday = Entry() #День рождения
 ent_bday.grid(row=4, column=1, pady=10, padx=10)
 lbl_addon = Label(text = "Дополнительная информация", font = ("Script MT Bold", 14))
 lbl_addon.grid(row=1, column=4, pady=10, padx=10, columnspan=2) 
 addons = []
 addons_var = StringVar(value = addons)
-box_addons = Listbox(listvariable = addons_var, height=1, width=60)
+box_addons = Listbox(listvariable = addons_var, height=1, width=60) #Дополнения
 box_addons.grid(row=2, column=4, columnspan=2, pady=10, padx=10)
 btn_addons = Button(text = 'Добавить', command=New_addons)
-btn_addons.grid(row = 1, column=6, sticky='E')
+btn_addons.grid(row = 1, column=6, sticky='NE')
+btn_e_addons = Button(text = 'Изменить', command=Edit_addons)
+btn_e_addons.grid(row = 1, column=6, sticky='SE')
 ent_search = Entry(width=40)
 ent_search.insert(string='Найти', index=0)
 ent_search.grid(row=0, column=5, pady=10, padx=10)
 btn_search = Button(text = 'Поиск', command=Search_rec)
 btn_search.grid(row = 0, column=6, sticky='E')
-btn_save_card = Button(text='Сохранить изменения', command=Save_card)
-btn_save_card.grid(row=5, column=3, columnspan=2)
+btn_Save_rec = Button(text='Сохранить изменения', command=Save_rec)
+btn_Save_rec.grid(row=5, column=3, columnspan=2)
+first_img = PhotoImage(file="Button-Rewind-icon.png")
+last_img = PhotoImage(file="Button-Forward-icon.png")
+prev_img = PhotoImage(file="Media-Controls-Rewind-icon.png")
+next_img = PhotoImage(file="Media-Controls-Fast-Forward-icon.png")
+btn_first = Button(command=Movie_first, image=first_img)
+btn_first.grid(row=7, column=1, sticky='E', pady=10)
+btn_prev = Button(command=Movie_prev, image=prev_img)
+btn_prev.grid(row=7, column=2, sticky='W', pady=10)
+lbl_index = Label(font = ("Script MT Bold", 16))
+lbl_index.grid(row=7, column=3, pady=10)
+btn_next = Button(command=Movie_next, image=next_img)
+btn_next.grid(row=7, column=4, sticky='E', pady=10)
+btn_last = Button(command=Movie_last, image=last_img)
+btn_last.grid(row=7, column=5, sticky='W', pady=10)
 
 #меню
 menu = Menu(window)  
@@ -232,6 +307,8 @@ new_item.add_command(label='Открыть', command=Open_db)
 menu.add_cascade(label='Файл', menu=new_item) 
 sec_item =Menu(menu)
 sec_item.add_command(label='Новая', command=New_rec)
+sec_item.add_command(label='Cохранить', command=Save_rec)
+sec_item.add_command(label='Удалить', command=Del_rec)
 menu.add_cascade(label='Запись', menu=sec_item) 
 window.config(menu=menu)
 window.mainloop()
