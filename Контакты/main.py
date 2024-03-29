@@ -17,6 +17,9 @@ window = Tk()
 
 def Read_db(Data : Connection, recindex):  #Opening DB
     global records
+    box_addons.delete(0, END)
+    box_phone.delete(0, END)
+    box_mails.delete(0, END)
     lbl_path.config(text = path)    
     cur = Data.cursor()
     cur.execute('Select * From Контакты;')
@@ -29,7 +32,7 @@ def Read_db(Data : Connection, recindex):  #Opening DB
     item = records[recindex]
     ent_title.delete(0, END)
     ent_title.insert(0,item[0])    
-    phones =[word.strip() for word in item[1].split(';') if word != '']        
+    phones = [word.strip() for word in item[1].split(';') if word != '']        
     phones_var.set(phones)
     mails =[word.strip() for word in item[2].split(';') if word != '']
     box_mails.config(height=len(mails))
@@ -118,7 +121,7 @@ def New_addons():
     if newvalue == '':
         return
     if box_addons.size() == 0:
-        addons_var.set(newvalue)
+        addons_var.set([newvalue])
     else:        
         box_addons.insert(END, newvalue)
     if box_addons.size() > box_phone.size():
@@ -133,7 +136,7 @@ def New_phone():
     if newvalue == '':
         return    
     if box_phone.size() == 0 :
-        phones_var.set(newvalue)
+        phones_var.set([newvalue])
     else:        
         box_phone.insert(END, newvalue)
     if box_phone.size() > box_addons.size():
@@ -148,7 +151,7 @@ def New_email():
     if newvalue == '':
         return     
     if box_mails.size() == 0:
-        mails_var.set(newvalue)
+        mails_var.set([newvalue])
     else:        
         box_mails.insert(END, newvalue)
     box_mails.config(height=box_mails.size())
@@ -225,7 +228,7 @@ def Edit(list : Listbox):
 
 
 def Edit_phone():
-    Edit(box_addons)
+    Edit(box_phone)
 
 def Edit_email():
     Edit(box_mails)
@@ -236,7 +239,9 @@ def Edit_addons():
 
 #Окно
 window.title("Телефонный справочник")
-window.geometry('1024x600') 
+window.geometry('1024x600')
+add_img = PhotoImage(file="add.png")
+edit_img = PhotoImage(file="edit.png")
 lbl_path = Label(text = '', font = ("Arial", 10)) #Путь к файлу
 lbl_path.grid(row=0, column=0, pady=10, padx=10, columnspan=3)
 lbl_title = Label(text = 'Имя', font = ("Script MT Bold", 14)) 
@@ -249,10 +254,10 @@ phones = []
 phones_var = StringVar(value=phones)
 box_phone = Listbox(listvariable=phones_var, height=1) #Список телефонов
 box_phone.grid(row=2, column=1, pady=10, padx=10)
-btn_phone = Button(text = 'Добавить', command=New_phone)
-btn_phone.grid(row = 2, column=2, sticky='NE')
-btn_e_phone = Button(text = 'Изменить', command=Edit_phone)
-btn_e_phone.grid(row = 2, column=2, sticky='SE')
+btn_phone = Button(text = 'Добавить', command=New_phone, image=add_img)
+btn_phone.grid(row = 2, column=2, sticky='W')
+btn_e_phone = Button(text = 'Изменить', command=Edit_phone, image=edit_img)
+btn_e_phone.grid(row = 2, column=3, sticky='E')
 lbl_mail = Label(text = 'e-mail', font = ("Script MT Bold", 14))
 lbl_mail.grid(row=3, column=0, pady=10, padx=10) 
 lbl_day = Label(text = 'День рождения', font = ("Script MT Bold", 14))
@@ -261,10 +266,10 @@ mails = []
 mails_var = StringVar(value=mails)
 box_mails = Listbox(listvariable=mails_var, height=1) #Список почтовых адресов
 box_mails.grid(row=3, column=1, pady=10, padx=10)
-btn_mail = Button(text = 'Добавить', command=New_email)
-btn_mail.grid(row = 3, column=2, sticky='NE')
-btn_e_mail = Button(text = 'Изменить', command=Edit_email)
-btn_e_mail.grid(row = 3, column=2, sticky='SE')
+btn_mail = Button(text = 'Добавить', command=New_email, image=add_img)
+btn_mail.grid(row = 3, column=2, sticky='W')
+btn_e_mail = Button(text = 'Изменить', command=Edit_email, image=edit_img)
+btn_e_mail.grid(row = 3, column=3, sticky='E')
 ent_bday = Entry() #День рождения
 ent_bday.grid(row=4, column=1, pady=10, padx=10)
 lbl_addon = Label(text = "Дополнительная информация", font = ("Script MT Bold", 14))
@@ -273,10 +278,10 @@ addons = []
 addons_var = StringVar(value = addons)
 box_addons = Listbox(listvariable = addons_var, height=1, width=60) #Дополнения
 box_addons.grid(row=2, column=4, columnspan=2, pady=10, padx=10)
-btn_addons = Button(text = 'Добавить', command=New_addons)
-btn_addons.grid(row = 1, column=6, sticky='NE')
-btn_e_addons = Button(text = 'Изменить', command=Edit_addons)
-btn_e_addons.grid(row = 1, column=6, sticky='SE')
+btn_addons = Button(text = 'Добавить', command=New_addons, image=add_img)
+btn_addons.grid(row = 1, column=6, sticky='W')
+btn_e_addons = Button(text = 'Изменить', command=Edit_addons, image=edit_img)
+btn_e_addons.grid(row = 1, column=7, sticky='E')
 ent_search = Entry(width=40)
 ent_search.insert(string='Найти', index=0)
 ent_search.grid(row=0, column=5, pady=10, padx=10)
