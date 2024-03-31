@@ -25,7 +25,7 @@ def Read_replacer():
     return res
 
 replacer = Read_replacer()
-msgbox(replacer)
+
 
 cur.execute(sql_str)
 for key, value in replacer.items():
