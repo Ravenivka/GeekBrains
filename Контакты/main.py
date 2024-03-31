@@ -153,10 +153,10 @@ def ViewOne(conn: Connection, usr):
     if len(vals) == 0:
         print('Записи отсутствуют')
         return  
-    for v in names:
+    for v in names:        
         print(f"{replacer[v]}: {vals[v]}")
     for t in tables:
-        if (t in ['sqlite_sequence', 'users']) == False:
+        if (t in ['sqlite_sequence', 'users', 'replacer']) == False:
             ViewTable(t, conn, vals['user'])
     
 def Save():
@@ -200,7 +200,10 @@ def SELECT(conn: Connection):
 
 
 def Search(conn: Connection):
-    array = SELECT(conn)  
+    array = SELECT(conn) 
+    if array == None:
+        msgbox("Ничего не найдено")
+        return 
     if len(array) ==1:
         choice = enterbox('Результат:', 'Поиск', array[0])
     else:
