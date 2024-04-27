@@ -1,0 +1,11 @@
+
+[name] = igor
+[phones] =     +7 945 222 22 22;   +7 922 111 11 11
+[name] = Sveta
+[phones] = 4 44 44;     3-33-33;      3-33-37
+[name] = taxi
+[phones] =   3-22-22;      5-55-55;     2-22-22;       +7 922 555 33 33
+[name] = College
+[phones] = 50615
+[name] = Ivanov Ivan
+[phones] = 8 800 333 33 33

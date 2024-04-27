@@ -1,0 +1,12 @@
+[name] = Sveta
+[phones] = 3-33-33
+[name] = College
+[phones] = 50615
+[name] = taxi
+[phones] = 5-55-55; 3-22-22; +7 922 555 33 33
+[name] = igor
+[phones] = +7 922 111 11 11; +7 945 222 22 22
+[name] = mom
+[phones] = 3-33-33
+[name] = taxi
+[phones] = 2-22-22
