@@ -5,3 +5,4 @@ FinalTest/bin/
 *.dia
 *.htm
 *.xlsx
+.fake
