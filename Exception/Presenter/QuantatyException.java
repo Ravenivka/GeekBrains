@@ -9,7 +9,7 @@ public class QuantatyException extends RuntimeException {
     }
 
 
-    public String getMessage(){
+    public String getMessage ()  {
         return this.msg;
     }
 }
