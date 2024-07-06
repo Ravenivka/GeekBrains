@@ -12,6 +12,7 @@ public class Model {
     private String family;
     private String strName;
     private String strSurname;
+    
 
     public Model(){
         formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -41,10 +42,15 @@ public class Model {
         this.strSurname = value;
     }
 
-    public String getString() {
+    private String getString() {
         String d = this.bd.format(this.formatter);
-        String s = String.format("<%s><%s><%s><%s> <%d><%c>", this.family, this.strName, this.strSurname, d, this.phoneNumber, this.gender);
+        String s = String.format("<%s><%s><%s><%s> <%d><%c>\n", this.family, this.strName, this.strSurname, d, this.phoneNumber, this.gender);
         return s;
+    }
+
+    public String getMessage() {
+        Recorder recorder = new Recorder(this.getString(), this.family);
+        return recorder.Save();
     }
 
 }

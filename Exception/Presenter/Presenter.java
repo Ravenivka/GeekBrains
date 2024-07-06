@@ -6,9 +6,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import Model.Model;
-import View.View;
+
 
 public class Presenter {
 
@@ -38,6 +37,7 @@ public class Presenter {
 
    private boolean checker(){         
         try{
+            @SuppressWarnings("unused")
             int n  = size();
             this.bd = dateBD();
             this.phoneNumber = getPhone();
@@ -46,8 +46,7 @@ public class Presenter {
             this.strName = list.get(1);
             this.strSurname = list.get(2);
         } catch (Exception e) {
-            this.message = e.getMessage() ;
-            int n = 0;            
+            this.message = e.getMessage() ;                       
             return false;
         } 
 
@@ -84,6 +83,7 @@ public class Presenter {
    }
 
    
+@SuppressWarnings("unused")
 private LocalDate dateBD() throws WrongDate {   
     LocalDate day = null;
     for (int i = 0; i < 6; i++){
