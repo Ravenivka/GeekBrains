@@ -6,6 +6,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import Model.Model;
 import View.View;
 
 public class Presenter {
@@ -17,6 +19,10 @@ public class Presenter {
     private DateTimeFormatter formatter;
     private LocalDate bd;
     private int phoneNumber;
+    private char gender;
+    private String family;
+    private String strName;
+    private String strSurname;
 
     public Presenter(View view){
        this.view = view;
@@ -30,16 +36,18 @@ public class Presenter {
         this.list = new ArrayList<>(L);
    }
 
-   private boolean checker(){        
-        int n;
+   private boolean checker(){         
         try{
-            n  = size();
+            int n  = size();
             this.bd = dateBD();
             this.phoneNumber = getPhone();
-             
+            this.gender = getGender(); 
+            this.family = list.get(0);
+            this.strName = list.get(1);
+            this.strSurname = list.get(2);
         } catch (Exception e) {
             this.message = e.getMessage() ;
-            n = 0;
+            int n = 0;            
             return false;
         } 
 
@@ -62,7 +70,16 @@ public class Presenter {
    }
 
    public String getString() { 
-        checker();         
+        if (checker()){
+            Model model = new Model();
+            model.setFamily(this.family);
+            model.setName(this.strName);
+            model.setSurname(this.strSurname);
+            model.setBirthDate(bd);
+            model.setPhone(this.phoneNumber);
+            model.setGender(this.gender);
+            this.message = model.getString();
+        }         
         return this.message;
    }
 
@@ -99,6 +116,23 @@ private LocalDate dateBD() throws WrongDate {
             throw new RuntimeException("Неправильный формат номера телефона");
         }
         return -1;
+    }
+
+    private char getGender() throws RuntimeException {
+        char c = '\u0000';
+        for (int i = 0; i < 4; i++){
+            if (this.list.get(i).equals("f")){
+                this.list.remove(i);
+                return 'f';
+            } else if(this.list.get(i).equals("m")){
+                this.list.remove(i);
+                return 'm';
+            }
+        }
+        if (c == '\u0000') {
+            throw new RuntimeException("Пол неопределён");
+        }
+        return '\u0000';
     }
 
 
