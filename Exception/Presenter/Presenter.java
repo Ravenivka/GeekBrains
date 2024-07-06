@@ -10,11 +10,13 @@ import View.View;
 
 public class Presenter {
 
+    private String message;
     private String inputString;
     private View view;
     private ArrayList<String> list;
     private DateTimeFormatter formatter;
     private LocalDate bd;
+    private int phoneNumber;
 
     public Presenter(View view){
        this.view = view;
@@ -33,8 +35,10 @@ public class Presenter {
         try{
             n  = size();
             this.bd = dateBD();
+            this.phoneNumber = getPhone();
+             
         } catch (Exception e) {
-            System.out.println(e);
+            this.message = e.getMessage() ;
             n = 0;
             return false;
         } 
@@ -59,7 +63,7 @@ public class Presenter {
 
    public String getString() { 
         checker();         
-        return this.bd.toString();
+        return this.message;
    }
 
    
@@ -80,7 +84,25 @@ private LocalDate dateBD() throws WrongDate {
      return null;  
    }
 
+   private int getPhone() throws RuntimeException {
+        int phone = -1;
+        for (int i = 0; i < 5; i++){
+            try {
+                phone = Integer.parseInt(this.list.get(i));
+                this.list.remove(i);
+                return phone;
+            } catch (NumberFormatException e) {
+                phone = -1;
+            }
+        }
+        if (phone == -1){
+            throw new RuntimeException("Неправильный формат номера телефона");
+        }
+        return -1;
+    }
 
 
-   //DateTimeParseException
+
+
+   //DateTimeParseException NumberFormatException
 }
