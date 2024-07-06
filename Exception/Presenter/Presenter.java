@@ -14,7 +14,7 @@ public class Presenter {
 
     private String message;
     private String inputString;
-    private View view;
+    
     private ArrayList<String> list;
     private DateTimeFormatter formatter;
     private LocalDate bd;
@@ -24,8 +24,8 @@ public class Presenter {
     private String strName;
     private String strSurname;
 
-    public Presenter(View view){
-       this.view = view;
+    public Presenter(){
+       
        formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     }
 
@@ -78,7 +78,7 @@ public class Presenter {
             model.setBirthDate(bd);
             model.setPhone(this.phoneNumber);
             model.setGender(this.gender);
-            this.message = model.getString();
+            this.message = model.getMessage();
         }         
         return this.message;
    }

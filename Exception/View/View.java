@@ -10,7 +10,7 @@ public class View {
     private Scanner sc;
 
     public View(){
-        this.presenter = new Presenter(this);
+        this.presenter = new Presenter();
         this.sc = new Scanner(System.in);
     }
 
